@@ -1,8 +1,9 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import TemplateDrawer from "./TemplateDrawer";
 
 interface WorkflowCanvasProps {
   children?: React.ReactNode;
@@ -17,6 +18,20 @@ export default function WorkflowCanvas({
   className,
   isEmpty = false
 }: WorkflowCanvasProps) {
+  const [templateDrawerOpen, setTemplateDrawerOpen] = useState(false);
+
+  const handleAddPerspective = () => {
+    setTemplateDrawerOpen(true);
+  };
+
+  const handleTemplateSelect = (templateId: string) => {
+    setTemplateDrawerOpen(false);
+    // Pass the selected template ID along with the node type
+    if (onAddNode) {
+      onAddNode(`perspective:${templateId}`);
+    }
+  };
+
   if (isEmpty) {
     return (
       <div className={cn("workflow-container", className)}>
@@ -39,25 +54,33 @@ export default function WorkflowCanvas({
       {children}
       
       {onAddNode && (
-        <div className="flex justify-center mt-6 space-x-4">
-          <Button 
-            variant="outline" 
-            className="flex items-center gap-2"
-            onClick={() => onAddNode("perspective")}
-          >
-            <Plus size={16} />
-            <span>Perspective</span>
-          </Button>
+        <>
+          <div className="flex justify-center mt-6 space-x-4">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2"
+              onClick={handleAddPerspective}
+            >
+              <Plus size={16} />
+              <span>Perspective</span>
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2"
+              onClick={() => onAddNode("choice")}
+            >
+              <Plus size={16} />
+              <span>Choice</span>
+            </Button>
+          </div>
           
-          <Button 
-            variant="outline" 
-            className="flex items-center gap-2"
-            onClick={() => onAddNode("choice")}
-          >
-            <Plus size={16} />
-            <span>Choice</span>
-          </Button>
-        </div>
+          <TemplateDrawer 
+            open={templateDrawerOpen} 
+            onOpenChange={setTemplateDrawerOpen} 
+            onSelect={handleTemplateSelect} 
+          />
+        </>
       )}
     </div>
   );
